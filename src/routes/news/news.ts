@@ -17,5 +17,22 @@ router.get("/", async (req: any, res: any, next: any) => {
   }
 });
 
+router.post("/", async (req: any, res: any, next: any) => {
+  try {
+    const { title, description } = req.body;
+    if (!title) {
+      res.status(404).json(responder(false, "Please insert title"));
+    }
+    if (!description) {
+      res.status(404).json(responder(false, "Please insert description"));
+    }
+    await news("news").insert({
+      title,
+      description,
+    });
+    res.status(202).json(responder(true, "News created sucessfully"));
+  } catch (error) {}
+});
+
 
 export default router;
