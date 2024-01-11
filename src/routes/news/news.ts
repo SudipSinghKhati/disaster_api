@@ -34,5 +34,14 @@ router.post("/", async (req: any, res: any, next: any) => {
   } catch (error) {}
 });
 
+router.get("/:id", async (req: any, res: any, next: any) => {
+  const id = req.params.id;
+  const getByID = await news("news").where({ id }).first();
+  if (!getByID) {
+    res.status(404).json(responder(false, "news not found"));
+  } else {
+    res.status(200).json(responder(true, `News on id: ${id}`, getByID));
+  }
+});
 
 export default router;
