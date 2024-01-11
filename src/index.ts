@@ -8,6 +8,7 @@ dotenv.config({ path: path.resolve(".env") });
 const app = express();
 
 app.use(express.json());
+app.use("/image", express.static("public/"));
 app.get("/", (req: any, res: any, next: any) => {
   res.send("Hello from nodejs");
 });
