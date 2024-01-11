@@ -1,9 +1,9 @@
-import news from "../../../db/db";
+import report from "../../../db/db";
 import { responder } from "../../../middelware/responder";
 const serverError = "Internal server error";
 const getAllNews = async (req: any, res: any, next: any) => {
   try {
-    const getAllNews = await news("news").select("*");
+    const getAllNews = await report("news").select("*");
     if (!getAllNews) {
       res.status(404).json(responder(false, "there are no news"));
     }
@@ -17,23 +17,31 @@ const getAllNews = async (req: any, res: any, next: any) => {
 const postNews = async (req: any, res: any, next: any) => {
   try {
     const { title, description } = req.body;
+    const image = req.file.filename;
     if (!title) {
       res.status(404).json(responder(false, "Please insert title"));
     }
     if (!description) {
       res.status(404).json(responder(false, "Please insert description"));
     }
-    await news("news").insert({
+    if (!image) {
+      res.status(404).json(responder(false, "Please put image"));
+    }
+    await report("news").insert({
       title,
       description,
+      image,
     });
     res.status(202).json(responder(true, "News created sucessfully"));
-  } catch (error) {}
+  } catch (error) {
+    next(error);
+    res.status(500).json(serverError);
+  }
 };
 
 const getNewsByID = async (req: any, res: any, next: any) => {
   const id = req.params.id;
-  const getByID = await news("news").where({ id }).first();
+  const getByID = await report("news").where({ id }).first();
   if (!getByID) {
     res.status(404).json(responder(false, "news not found"));
   } else {
@@ -43,7 +51,7 @@ const getNewsByID = async (req: any, res: any, next: any) => {
 
 const deleteNewsByID = async (req: any, res: any, next: any) => {
   const id = req.params.id;
-  const getByID = await news("news").where({ id }).delete();
+  const getByID = await report("news").where({ id }).delete();
   if (!getByID) {
     res.status(404).json(responder(false, "news not found"));
   } else {
@@ -54,8 +62,8 @@ const deleteNewsByID = async (req: any, res: any, next: any) => {
 };
 
 export = {
-    getAllNews, 
-    postNews,
-    getNewsByID,
-    deleteNewsByID,
-}
+  getAllNews,
+  postNews,
+  getNewsByID,
+  deleteNewsByID,
+};

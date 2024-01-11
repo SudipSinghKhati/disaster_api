@@ -1,12 +1,12 @@
 import express from "express";
-import newsServices from "./service/news";
 import upload from "../../middelware/upload";
+import newsServices from "./service/news";
 
 const router = express.Router();
 
 router.get("/", newsServices.getAllNews);
 
-router.post("/", newsServices.postNews);
+router.post("/", upload.single("image"), newsServices.postNews);
 
 router.get("/:id", newsServices.getNewsByID);
 
